@@ -46,6 +46,10 @@
 							"name": "Execute Pipeline1",
 							"type": "ExecutePipeline",
 							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Customer",
+									"type": "PipelineReference"
+								},
 								"waitOnCompletion": false
 							}
 						}
