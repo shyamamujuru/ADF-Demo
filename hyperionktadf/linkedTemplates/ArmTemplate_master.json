@@ -1,0 +1,119 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name",
+			"defaultValue": "hyperionktadf"
+		},
+		"AzureSqlDatabase1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
+		},
+		"DestinationDataset_twe_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"DestinationDataset_twe_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "FileIncrementalLoad/Destination"
+		},
+		"SourceDataset_twe_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"SourceDataset_twe_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "FileIncrementalLoad/Source"
+		},
+		"AzureDataLakeStore1_properties_typeProperties_dataLakeStoreUri": {
+			"type": "string",
+			"defaultValue": "https://hyperionkt.azuredatalakestore.net/webhdfs/v1"
+		},
+		"AzureDataLakeStore1_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "843da9a1-1b5c-4cd9-af48-823ecdba3a26"
+		},
+		"AzureDataLakeStore1_properties_typeProperties_subscriptionId": {
+			"type": "string",
+			"defaultValue": "f6c810db-fe90-44d5-b0dc-73653ee1783d"
+		},
+		"AzureDataLakeStore1_properties_typeProperties_resourceGroupName": {
+			"type": "string",
+			"defaultValue": "syam.amujuru"
+		},
+		"Trigger_twe_properties_IncrementalLoadByLatmodifiedDate_parameters_windowStart": {
+			"type": "string",
+			"defaultValue": "@{addminutes(trigger().scheduledTime, -2)}"
+		},
+		"Trigger_twe_properties_IncrementalLoadByLatmodifiedDate_parameters_windowEnd": {
+			"type": "string",
+			"defaultValue": "@trigger().scheduledTime"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas Token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureSqlDatabase1_connectionString": {
+						"value": "[parameters('AzureSqlDatabase1_connectionString')]"
+					},
+					"AzureDataLakeStore1_properties_typeProperties_dataLakeStoreUri": {
+						"value": "[parameters('AzureDataLakeStore1_properties_typeProperties_dataLakeStoreUri')]"
+					},
+					"AzureDataLakeStore1_properties_typeProperties_tenant": {
+						"value": "[parameters('AzureDataLakeStore1_properties_typeProperties_tenant')]"
+					},
+					"AzureDataLakeStore1_properties_typeProperties_subscriptionId": {
+						"value": "[parameters('AzureDataLakeStore1_properties_typeProperties_subscriptionId')]"
+					},
+					"AzureDataLakeStore1_properties_typeProperties_resourceGroupName": {
+						"value": "[parameters('AzureDataLakeStore1_properties_typeProperties_resourceGroupName')]"
+					},
+					"DestinationDataset_twe_properties_typeProperties_fileName": {
+						"value": "[parameters('DestinationDataset_twe_properties_typeProperties_fileName')]"
+					},
+					"DestinationDataset_twe_properties_typeProperties_folderPath": {
+						"value": "[parameters('DestinationDataset_twe_properties_typeProperties_folderPath')]"
+					},
+					"SourceDataset_twe_properties_typeProperties_fileName": {
+						"value": "[parameters('SourceDataset_twe_properties_typeProperties_fileName')]"
+					},
+					"SourceDataset_twe_properties_typeProperties_folderPath": {
+						"value": "[parameters('SourceDataset_twe_properties_typeProperties_folderPath')]"
+					},
+					"Trigger_twe_properties_IncrementalLoadByLatmodifiedDate_parameters_windowStart": {
+						"value": "[parameters('Trigger_twe_properties_IncrementalLoadByLatmodifiedDate_parameters_windowStart')]"
+					},
+					"Trigger_twe_properties_IncrementalLoadByLatmodifiedDate_parameters_windowEnd": {
+						"value": "[parameters('Trigger_twe_properties_IncrementalLoadByLatmodifiedDate_parameters_windowEnd')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

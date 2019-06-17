@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "hyperionktadf"
+		},
+		"AzureSqlDatabase1_connectionString": {
+			"value": ""
+		},
+		"DestinationDataset_twe_properties_typeProperties_fileName": {
+			"value": ""
+		},
+		"DestinationDataset_twe_properties_typeProperties_folderPath": {
+			"value": "FileIncrementalLoad/Destination"
+		},
+		"SourceDataset_twe_properties_typeProperties_fileName": {
+			"value": ""
+		},
+		"SourceDataset_twe_properties_typeProperties_folderPath": {
+			"value": "FileIncrementalLoad/Source"
+		},
+		"AzureDataLakeStore1_properties_typeProperties_dataLakeStoreUri": {
+			"value": "https://hyperionkt.azuredatalakestore.net/webhdfs/v1"
+		},
+		"AzureDataLakeStore1_properties_typeProperties_tenant": {
+			"value": "843da9a1-1b5c-4cd9-af48-823ecdba3a26"
+		},
+		"AzureDataLakeStore1_properties_typeProperties_subscriptionId": {
+			"value": "f6c810db-fe90-44d5-b0dc-73653ee1783d"
+		},
+		"AzureDataLakeStore1_properties_typeProperties_resourceGroupName": {
+			"value": "syam.amujuru"
+		},
+		"Trigger_twe_properties_IncrementalLoadByLatmodifiedDate_parameters_windowStart": {
+			"value": "@{addminutes(trigger().scheduledTime, -2)}"
+		},
+		"Trigger_twe_properties_IncrementalLoadByLatmodifiedDate_parameters_windowEnd": {
+			"value": "@trigger().scheduledTime"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
