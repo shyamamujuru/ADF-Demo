@@ -151,6 +151,36 @@
 					"referenceName": "AzureSqlDatabase1",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "EndAudit",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"url": "https://prod-08.centralindia.logic.azure.com:443/workflows/49f999d633724a5ba316d774356c0e78/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=svCnREYDg6VOHJktwY59XXjjqmzUSbrBSFJa2m29Zt0",
+					"method": "POST",
+					"body": {
+						"DataFactoryName": "Customer",
+						"EmailTo": "lokesh.althi@imaginea.com",
+						"ErrorMessage": "failed",
+						"PipelineName": "Customer",
+						"Subject": "Pipe line failed"
+					}
+				}
 			}
 		],
 		"parameters": {
