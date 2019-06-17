@@ -1,0 +1,13 @@
+{
+	"name": "AzureDataLakeStore1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"type": "AzureDataLakeStore",
+		"typeProperties": {
+			"dataLakeStoreUri": "https://hyperionkt.azuredatalakestore.net/webhdfs/v1",
+			"tenant": "843da9a1-1b5c-4cd9-af48-823ecdba3a26",
+			"subscriptionId": "f6c810db-fe90-44d5-b0dc-73653ee1783d",
+			"resourceGroupName": "syam.amujuru"
+		}
+	}
+}

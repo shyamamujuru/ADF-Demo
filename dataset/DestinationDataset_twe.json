@@ -1,0 +1,15 @@
+{
+	"name": "DestinationDataset_twe",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStore1",
+			"type": "LinkedServiceReference"
+		},
+		"type": "AzureDataLakeStoreFile",
+		"typeProperties": {
+			"fileName": "",
+			"folderPath": "FileIncrementalLoad/Destination"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

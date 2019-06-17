@@ -1,0 +1,31 @@
+{
+	"name": "SourceDataset_twe",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStore1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"cw_modifiedDatetimeStart": {
+				"type": "String"
+			},
+			"cw_modifiedDatetimeEnd": {
+				"type": "String"
+			}
+		},
+		"type": "AzureDataLakeStoreFile",
+		"typeProperties": {
+			"fileName": "",
+			"folderPath": "FileIncrementalLoad/Source",
+			"modifiedDatetimeStart": {
+				"value": "@dataset().cw_modifiedDatetimeStart",
+				"type": "Expression"
+			},
+			"modifiedDatetimeEnd": {
+				"value": "@dataset().cw_modifiedDatetimeEnd",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

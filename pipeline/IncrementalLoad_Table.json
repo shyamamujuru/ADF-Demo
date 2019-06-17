@@ -1,0 +1,153 @@
+{
+	"name": "IncrementalLoad_Table",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookuplastwaterWaterMarkActivity",
+				"type": "Lookup",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[usp_Get_watermark]",
+						"storedProcedureParameters": {
+							"TableName": {
+								"type": "String",
+								"value": "data_source_table"
+							}
+						}
+					},
+					"dataset": {
+						"referenceName": "AzureSqldatabase",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "LookupNewWaterMarkActivity",
+				"type": "Lookup",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select MAX(LastModifytime) as NewWatermarkvalue from [AdfDemo].data_source_table"
+					},
+					"dataset": {
+						"referenceName": "AzureSqldatabase",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "LoadDestination",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "LookuplastwaterWaterMarkActivity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LookupNewWaterMarkActivity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "select * from [AdfDemo].data_source_table where LastModifytime > '@{activity('LookuplastwaterWaterMarkActivity').output.firstRow.WatermarkValue}' and LastModifytime <= '@{activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue}'",
+							"type": "Expression"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSetting"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSetting",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSqldatabase",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "HyperionktCsv",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Stored Procedure1",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "LoadDestination",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_write_watermark]",
+					"storedProcedureParameters": {
+						"LastModifiedtime": {
+							"value": {
+								"value": "@activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"TableName": {
+							"value": "data_source_table",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				}
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,25 @@
+{
+	"name": "HyperionktCsv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStore1",
+			"type": "LinkedServiceReference"
+		},
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureDataLakeStoreLocation",
+				"fileName": {
+					"value": "@Concat('Employee-',formatDateTime(utcnow(),'yyyyMMddhhmmss'),'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": "TableIncremtalLoad"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
