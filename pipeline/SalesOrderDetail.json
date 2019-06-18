@@ -1,0 +1,201 @@
+{
+	"name": "SalesOrderDetail",
+	"properties": {
+		"activities": [
+			{
+				"name": "DataFlow",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "StartAudit",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSetting"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSetting",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "TempSource1",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": {
+								"value": "@pipeline().parameters.TableName",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "TempSink1",
+						"type": "DatasetReference",
+						"parameters": {
+							"Folder": {
+								"value": "@pipeline().parameters.DestinationFolder",
+								"type": "Expression"
+							},
+							"FileName": {
+								"value": "@Concat(pipeline().parameters.FileName,FormatDatetime(UTCNow(),'yyyyMMddhhmmss'))",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "StartAudit",
+				"type": "Lookup",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[Control].[StartAudit]",
+						"storedProcedureParameters": {
+							"PipelineID": {
+								"type": "Guid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							"PipelineName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							"TableName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.TableName",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"dataset": {
+						"referenceName": "AzureSqldatabase3",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "EndAudit",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "DataFlow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"storedProcedureName": "[Control].[EndAudit]",
+					"storedProcedureParameters": {
+						"AuditID": {
+							"value": {
+								"value": "@activity('StartAudit').output.FirstRow.AuditID",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"outputFilePath": {
+							"value": {
+								"value": "@Concat(pipeline().parameters.DestinationFolder,pipeline().parameters.FileName,FormatDatetime(UTCNow(),'yyyyMMddhhmm'))",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "SuccessMail",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "EndAudit",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"url": "https://prod-08.centralindia.logic.azure.com:443/workflows/49f999d633724a5ba316d774356c0e78/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=svCnREYDg6VOHJktwY59XXjjqmzUSbrBSFJa2m29Zt0",
+					"method": "POST",
+					"body": {
+						"DataFactoryName": "Customer",
+						"EmailTo": "lokesh.althi@imaginea.com",
+						"ErrorMessage": "failed",
+						"PipelineName": "Customer",
+						"Subject": "Pipe line Succeeded"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"TableName": {
+				"type": "string",
+				"defaultValue": "SalesLT.SalesOrderDetail"
+			},
+			"DestinationFolder": {
+				"type": "string",
+				"defaultValue": "Template\\SalesOrderDetail"
+			},
+			"FileName": {
+				"type": "string",
+				"defaultValue": "SalesOrderDetail"
+			}
+		}
+	}
+}
