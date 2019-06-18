@@ -153,7 +153,7 @@
 				}
 			},
 			{
-				"name": "Web1",
+				"name": "SuccessMail",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
@@ -178,7 +178,7 @@
 						"EmailTo": "lokesh.althi@imaginea.com",
 						"ErrorMessage": "failed",
 						"PipelineName": "Customer",
-						"Subject": "Pipe line failed"
+						"Subject": "Pipe line Succeeded"
 					}
 				}
 			}
