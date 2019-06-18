@@ -768,93 +768,12 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/MasterPipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "GetPipelineList",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "Select * from [Control].[PilelineList] WHERE isactive=1"
-							},
-							"dataset": {
-								"referenceName": "AzureSqldatabase",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					},
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "GetPipelineList",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('GetPipelineList').output.Pipelinename\n",
-								"type": "Expression"
-							},
-							"isSequential": false,
-							"batchCount": 2,
-							"activities": [
-								{
-									"name": "Execute Pipeline1",
-									"type": "ExecutePipeline",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "Customer",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": false,
-										"parameters": {}
-									}
-								}
-							]
-						}
-					}
-				],
-				"parameters": {
-					"PipelineName": {
-						"type": "object",
-						"defaultValue": "product"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/AzureSqldatabase')]",
-				"[concat(variables('factoryId'), '/pipelines/Customer')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Trigger_twe')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
+				"runtimeState": "Started",
 				"pipelines": [
 					{
 						"pipelineReference": {
